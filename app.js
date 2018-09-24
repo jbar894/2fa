@@ -11,7 +11,7 @@ app.set(url,'');
 app.set(decoded,'');
 
 function generateQRCode(){
-    const hash = app.settings.userId
+    const hash = app.get('userId');
     QRCode.toDataURL(hash)
         .then(url => {
             this.updateURL(url)
@@ -20,13 +20,13 @@ function generateQRCode(){
 };
 
 function updateURL(url){
-    app.settings.url = url;
+    app.settings('url', url);
 };
 
 function updateDecode(url){
     var qr = new QRCodeReader()
     const decoded = qr.decode(url)
-    app.settings.decoded = decoded;
+    app.settings('decoded', decoded);
 
 };
 
