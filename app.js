@@ -1,43 +1,36 @@
 var express = require('express');
 var moment = require('moment');
-var QRCode = require('qrcode');
-var QRCodeReader = require('qrcode-reader');
+const speakeasy = require('speakeasy');
+var bodyParser = require('body-parser');
 
 var app = express();
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
 var eventId = '123456789';
 var userId = '987654321';
 var time = moment().unix();
-var url = '';
-var decoded = '';
 
-function generateQRCode(){
-    const hash = userId;
-    QRCode.toDataURL(hash)
-        .then(url => {
-            this.updateURL(url)
-            this.updateDecode(url)
-        })
-};
+var secret = eventId+userId;
+var token1 = speakeasy.totp({ secret: secret, time: 1453853945 });
 
-function updateURL(url){
-    this.url = url;
-};
-
-function updateDecode(url){
-    var qr = new QRCodeReader()
-    const decoded = qr.decode(url)
-    this.decoded = decoded;
-};
+console.log(token1);
 
 app.get('/', function (req, res) {
     res.sendfile(__dirname + "/index.html");
   });
 
-app.post('/generate', function (req, res) {
-    res.send(eventId);
-  
+app.post('/generate', function (req, res, next) {
+    generateCode(req.body, res);
 })
 
 app.listen(3000);
+
+function generateCode(params, res){
+    var secret = params.param1 + params.param2;
+    var token1 = speakeasy.totp({ secret: secret, time: 1453853945 });
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.end("The code is " + token1);
+}
 
 
