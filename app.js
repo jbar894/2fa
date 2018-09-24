@@ -21,19 +21,22 @@ app.post('/generate', function (req, res, next) {
     generateCode(req.body, res);
 })
 
-
-function generateCode(params, res){
+function generateCode(params, res) {
     var secret = params.param1 + params.param2;
-    var token1 = speakeasy.totp({ secret: secret, time: 1453853945 });
-    var url = speakeasy.otpauthURL({ secret: token1.ascii, label: 'Name of Secret', algorithm: 'sha512' });
-    
-    QRCode.toDataURL(secret.otpauth_url, function(err, data_url) {
-        console.log(data_url);
-        res.end('<img src="' + data_url + '">');
-      });
+    console.log('secret', secret)
+    var token1 = speakeasy.totp({ secret: secret, time: params.param3 });
+    console.log('token1', token1)
 
-    res.writeHead(200, { 'Content-Type': 'text/html' });
-    res.end("The code is " + token1);
+    var url = speakeasy.otpauthURL({ secret: params.param2 + '', label: 'Name of Secret', algorithm: 'sha512' });
+    console.log('url', url)
+    QRCode.toDataURL(url)
+        .then(url => {
+            res.writeHead(200, { 'Content-Type': 'text/html' });
+            return res.end(`<img src='${url}' /><br />Your code is ${token1}`)
+        })
+        .catch(err => {
+            console.error(err)
+        })
 }
 
 
