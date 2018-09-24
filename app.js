@@ -4,11 +4,15 @@ var QRCode = require('qrcode');
 var QRCodeReader = require('qrcode-reader');
 
 var app = express();
+var eventId = '';
+var userId = '';
+var time = '';
+var url = '';
+var decoded = '';
+
 app.set(eventId, '123456789');
 app.set(userId, '987654321');
 app.set(time, moment().unix());
-app.set(url,'');
-app.set(decoded,'');
 
 function generateQRCode(){
     const hash = app.get('userId');
@@ -31,7 +35,7 @@ function updateDecode(url){
 };
 
 app.get('/', function (req, res) {
-    res.send('hello world')
+    res.sendfile(__dirname + "/index.html");
   })
 
 app.listen(3000);
